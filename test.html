@@ -1,0 +1,9 @@
+<script src="xhr.js"></script>
+
+<my-xhr url="http://hipsterjesus.com/api/"></my-xhr>
+
+<script>
+  document.querySelector('my-xhr').addEventListener('result-change', function() {
+    console.info('got result-change, new result', this.result);
+  })
+</script>
