@@ -3,7 +3,8 @@
 <my-xhr url="http://hipsterjesus.com/api/"></my-xhr>
 
 <script>
-  document.querySelector('my-xhr').addEventListener('result-change', function() {
-    console.info('got result-change, new result', this.result);
-  })
+  var x = document.querySelector('my-xhr');
+  x.addEventListener('response-change', function() {
+    console.info('got response-change, new response', this.response);
+  });
 </script>

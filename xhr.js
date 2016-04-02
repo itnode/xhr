@@ -17,6 +17,11 @@
 window.XhrElement = (function() {
   const xhrTimeout = 15;
 
+  /**
+   * Helper to safely dispatch events (i.e., for IE9-10).
+   * @param {!EventTarget} target to dispatch event on
+   * @param {string} name of event
+   */
   function dispatchEvent(target, name) {
     let ev = document.createEvent('Event');
     ev.initEvent(name, /* bubbles */ true, /* cancelable */ false);
@@ -24,34 +29,76 @@ window.XhrElement = (function() {
   }
 
   let xe = class XhrElement extends HTMLElement {
-
-    constructor() {
+    createdCallback() {
       this._timeout = null;
       this._result = undefined;
+      this._xhr = new XMLHttpRequest();
+
+      this.performRequest();
     }
 
+    /**
+     * @param {string} attr
+     * @param {string} oldVal
+     * @param {string} newVal
+     */
+    attributeChangedCallback(attr, oldVal, newVal) {
+      switch(attr) {
+        case 'url':
+        case 'credentials':
+          this.performRequest();
+          break;
+      }
+    }
+
+    /**
+     * @return {string} URL to fetch
+     */
     get url() {
       return this.getAttribute('url');
     }
 
-    set url(v) {
-      if (this.url != v) {
-        this.setAttribute('url', v);
-        this.performRequest();
+    /**
+     * @param {string} url to fetch
+     */
+    set url(url) {
+      this.setAttribute('url', url);
+    }
+
+    /**
+     * @return {boolean} whether to pass credentials on cross-site requests
+     */
+    get credentials() {
+      return this.hasAttribute('credentials');
+    }
+
+    /**
+     * @param {boolean} v whether to pass credentials on cross-site requests
+     */
+    set credentials(v) {
+      if (v) {
+        this.setAttribute('credentials', '');
+      } else {
+        this.removeAttribute('credentials');
       }
     }
 
-    get result() {
-      return this._result;
+    get response() {
+      return this._response;
     }
 
-    _setResult(result) {
-      this._result = result;
-      dispatchEvent(this, 'result-change');
+    _setResponse(response) {
+      this._response = response;
+      dispatchEvent(this, 'response-change');
     }
 
+    /**
+     * Requests that this element perform the request, even if the result is already up-to-date.
+     */
     performRequest() {
-      // TODO: create new Promise
+      this._xhr.abort();  // always abort for safety
+
+      // TODO: move all this into a helper class
       if (!this.url) {
         this._setResult(undefined);
         return;
@@ -59,23 +106,21 @@ window.XhrElement = (function() {
 
       window.clearTimeout(this._timeout);
       this._timeout = window.setTimeout(_ => {
-        console.debug('doing fetch for', this.url);
-        window.fetch(this.url).then(out => {
-          this._setResult(out);
-        });
+        let x = new XMLHttpRequest();
+        this._xhr = x;
+
+        x.open('GET', this.url);
+        x.onload = () => {
+          if (this._xhr != x) { return; }
+          this._setResponse(x.response);
+        };
+        x.onerror = () => {
+          if (this._xhr != x) { return; }
+          this._setResponse(new Error(x.statusText ? x.statusText : '' + x.status));
+        };
+        x.send();
+
       }, xhrTimeout);
-    }
-
-    createdCallback() {
-      this.performRequest();
-    }
-
-    attributeChangedCallback(attr, oldVal, newVal) {
-      switch(attr) {
-        case 'url':
-          this.performRequest();
-          break;
-      }
     }
 
   };
