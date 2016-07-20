@@ -16,6 +16,7 @@
 
 window.XhrElement = (function() {
   const xhrTimeout = 15;
+  const jsonType = 'application/json';
 
   /**
    * Helper to safely dispatch events (i.e., for IE9-10).
@@ -28,7 +29,7 @@ window.XhrElement = (function() {
     target.dispatchEvent(ev);
   }
 
-  let xe = class XhrElement extends HTMLElement {
+  const xe = class XhrElement extends HTMLElement {
     createdCallback() {
       this._timeout = null;
       this._result = undefined;
@@ -109,10 +110,23 @@ window.XhrElement = (function() {
         let x = new XMLHttpRequest();
         this._xhr = x;
 
+        // Check for this._xhr != x below, to see whether we've been superceded by some other
+        // request.
+
         x.open('GET', this.url);
         x.onload = () => {
           if (this._xhr != x) { return; }
-          this._setResponse(x.response);
+
+          const ct = x.getResponseHeader('Content-Type');
+
+          let response = x.response;
+
+          // look for 'type' or 'type;...'
+          if (ct == jsonType || ct.substr(0, jsonType.length + 1) == jsonType + ';') {
+            response = JSON.parse(response);
+          }
+
+          this._setResponse(response);
         };
         x.onerror = () => {
           if (this._xhr != x) { return; }
@@ -124,8 +138,8 @@ window.XhrElement = (function() {
     }
 
   };
-  return xe;
 
+  return xe;
 }());
 
 document.registerElement('my-xhr', XhrElement);
