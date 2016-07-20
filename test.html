@@ -1,10 +1,20 @@
 <script src="xhr.js"></script>
 
-<my-xhr url="http://hipsterjesus.com/api/"></my-xhr>
+<my-xhr url="https://ron-swanson-quotes.herokuapp.com/v2/quotes"></my-xhr>
 
 <script>
   var x = document.querySelector('my-xhr');
   x.addEventListener('response-change', function() {
     console.info('got response-change, new response', this.response);
+
+    output.textContent = '';
+    this.response.forEach(function(response) {
+      var p = document.createElement('p');
+      p.textContent = response;
+      output.appendChild(p);
+    });
   });
 </script>
+
+<div id="output">
+</div>
