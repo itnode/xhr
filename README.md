@@ -24,3 +24,19 @@ x.addEventListener('response-change', function() {
   });
 });
 ```
+
+If there was an error making the request, the `response` property will contain an `Error`.
+For example-
+
+```js
+var x = document.querySelector('my-xhr');
+x.addEventListener('response-change', function() {
+  if (x.response instanceof Error) {
+    console.warn('got error making XHR', x.response);
+  }
+});
+```
+
+# Supports
+
+Anywhere Custom Elements [are supported](http://caniuse.com/#feat=custom-elements), including [via](https://github.com/WebReflection/document-register-element) [polyfill](https://github.com/WebComponents/webcomponentsjs).
