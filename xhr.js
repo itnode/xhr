@@ -90,6 +90,7 @@ window.XhrElement = (function() {
 
     _setResponse(response) {
       this._response = response;
+      this.innerHTML = response;
       dispatchEvent(this, 'response-change');
     }
 
