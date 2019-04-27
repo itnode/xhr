@@ -1,4 +1,8 @@
 {
-"name": "xhr",
-"version": "1.0.0"
+  "name": "xhr",
+  "description": "xhr request",
+  "version": "1.0.0",
+  "dependencies": {},
+  "devDependencies": {},
+  "main": "xhr.js"
 }
