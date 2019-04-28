@@ -143,4 +143,7 @@ window.XhrElement = (function() {
   return xe;
 }());
 
-window.customElements.define('my-xhr', XhrElement);
+window.addEventListener('WebComponentsReady', function(e) {
+  window.customElements.define('my-xhr', XhrElement);
+});
+
