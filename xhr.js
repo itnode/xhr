@@ -143,4 +143,4 @@ window.XhrElement = (function() {
   return xe;
 }());
 
-document.registerElement('my-xhr', XhrElement);
+window.customElements.define('my-xhr', XhrElement);
