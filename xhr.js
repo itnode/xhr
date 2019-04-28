@@ -144,6 +144,6 @@ window.XhrElement = (function() {
 }());
 
 window.addEventListener('WebComponentsReady', function(e) {
-  window.customElements.define('my-xhr', XhrElement);
-});
+document.registerElement('my-xhr', XhrElement);}
+                       );
 
