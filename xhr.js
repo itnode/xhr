@@ -14,10 +14,8 @@
  * the License.
  */
 
-window.addEventListener('WebComponentsReady', function(e) {
 
 
-window.XhrElement = (function() {
   const xhrTimeout = 15;
   const jsonType = 'application/json';
 
@@ -33,7 +31,7 @@ window.XhrElement = (function() {
   }
 
   const xe = class XhrElement extends HTMLElement {
-    createdCallback() {
+    connectCallback() {
       this._timeout = null;
       this._result = undefined;
       this._xhr = new XMLHttpRequest();
@@ -143,9 +141,4 @@ window.XhrElement = (function() {
 
   };
 
-  return xe;
-}());
-
-document.registerElement('my-xhr', XhrElement);}
-                       );
-
+window.customElements.define("my-xhr", xe)
