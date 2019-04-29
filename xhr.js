@@ -31,7 +31,7 @@
   }
 
   const xe = class XhrElement extends HTMLElement {
-    connectCallback() {
+    connectedCallback() {
       this._timeout = null;
       this._result = undefined;
       this._xhr = new XMLHttpRequest();
